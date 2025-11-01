@@ -1,10 +1,15 @@
 package backend.dtos;
 
 public record UserDto  (
+    Long id,
     String username,
-    String password
+    String email,
+    String phoneNumber,
+    String address,
+    String postalCode,
+    String city,
+    String website
     
     ) {
-    
+      
 }
-

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -15,10 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend.configuration.JwtUtils;
+import backend.constants.UserRole;
 import backend.dtos.AuthUserDto;
+import backend.dtos.RegisterDto;
 import backend.models.User;
 import backend.repositories.UserRepository;
-import backend.services.UserMapperService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,10 +34,10 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
-    private final UserMapperService userMapperService;
+    
 
     @PostMapping("/register")
-    public ResponseEntity <?> register(@RequestBody AuthUserDto authUserDto ) {
+    public ResponseEntity <?> register(@RequestBody RegisterDto authUserDto ) {
         try {
             if (userRepository.findByUsername(authUserDto.username()) != null) {
             return ResponseEntity.badRequest().body("Username is already taken");
@@ -43,7 +45,9 @@ public class AuthController {
         User user = new User();
         user.setUsername( authUserDto.username() );
         user.setPassword(passwordEncoder.encode(authUserDto.password()));
-
+         UserRole role = authUserDto.role() != null ? authUserDto.role() : UserRole.ADMIN;
+        user.setRole(role);   
+        
         return ResponseEntity.ok(userRepository.save(user));
         } catch (Exception e) {
             e.printStackTrace();
@@ -56,7 +60,7 @@ public class AuthController {
     public ResponseEntity<?> login(@RequestBody AuthUserDto authUserDto) {
 
         try{
-            Authentication authentication = authenticationManager.authenticate(new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(authUserDto.username(), authUserDto.password()));
+            Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authUserDto.username(), authUserDto.password()));
             if (authentication.isAuthenticated()) {
                 Map<String, Object> authData = new HashMap<>();
                 authData.put("token", jwtUtils.generateToken(authUserDto.username()));

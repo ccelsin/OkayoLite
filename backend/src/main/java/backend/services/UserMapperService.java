@@ -2,14 +2,25 @@ package backend.services;
 
 import org.springframework.stereotype.Service;
 
-import backend.dtos.AuthUserDto;
+import backend.dtos.UserDto;
 import backend.models.User;
 
 @Service
 public class UserMapperService {
 
-    public AuthUserDto toAuthUserDto(User user) {
-        return new AuthUserDto(user.getUsername(), user.getPassword(), user.getRole());
+    public static UserDto toDto(User user){
+        
+        return new UserDto(
+            user.getId(),
+            user.getUsername(),
+            user.getEmail(),
+            user.getPhoneNumber(),
+            user.getAddress(),
+            user.getPostalCode(),
+            user.getCity(),
+            user.getWebsite()
+        );
     }
     
 }
+
