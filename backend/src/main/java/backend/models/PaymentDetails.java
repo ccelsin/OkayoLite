@@ -1,36 +1,37 @@
 package backend.models;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 import backend.constants.PaymentTerms;
 
 @Entity
 @Table(name = "payment_details")
-@Getter
-@Setter
+@Data
 public class PaymentDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Payment name cannot be null")
     private String paymentName;
 
-    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Payment term cannot be null")
     private PaymentTerms paymentTerm;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Domiciliation cannot be null")
     private String domiciliation;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Holder name cannot be null")
     private String holderName;
 
-    @Column(nullable = false)
+    @NotBlank(message = "IBAN cannot be null")
     private String iban;
 
-    @Column(nullable = false)
+    @NotBlank(message = "BIC cannot be null")
     private String bic;
 
     @ManyToOne

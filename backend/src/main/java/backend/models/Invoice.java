@@ -3,24 +3,26 @@ package backend.models;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 @Entity
 @Table(name = "invoices")
-@Getter
-@Setter
+@Data
 public class Invoice {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NotBlank(message = "Reference cannot be null")
     private String reference;
 
+    @Nullable
     private Date billingDate;
 
+    @Nullable
     private Date dueDate;
 
     @ManyToOne

@@ -2,47 +2,47 @@ package backend.models;
 
 import java.util.List;
 
+import backend.constants.UserRole;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
 
 @Entity
 @Table(name = "users")
-@Getter
-@Setter
+@Data
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Username cannot be null")
     private String username;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Password cannot be null")
     private String password;
 
-    @Column(nullable = false)
-    private Long role;
+    @Enumerated(EnumType.STRING)
+    @NotNull(message = "Role cannot be null")
+    private UserRole role;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Email cannot be null")
     private String email;
 
-    @Column(nullable = false)
-    private String phone;
+    @NotBlank(message = "Phone number cannot be null")
+    private String Number;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Address cannot be null")
     private String address;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Postal code cannot be null")
     private String postalCode;
 
-    @Column(nullable = false)
+    @NotBlank(message = "City cannot be null")
     private String city;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Website cannot be null")
     private String website;
 
     @OneToMany(mappedBy = "user")

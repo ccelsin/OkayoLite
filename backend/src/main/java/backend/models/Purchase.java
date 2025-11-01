@@ -3,13 +3,14 @@ package backend.models;
 import java.math.BigDecimal;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.Data;
 
 @Entity
 @Table(name = "purchases")
-@Getter
-@Setter
+@Data
 public class Purchase {
 
     @Id
@@ -20,10 +21,11 @@ public class Purchase {
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Name cannot be null")
     private String name;
     
-    @Column(nullable = false)
+    @NotNull(message = "Quantity cannot be null")
+    @Positive(message = "Quantity must be positive")
     private Integer quantity;
 
     @Column(nullable = false, precision = 15, scale = 2)

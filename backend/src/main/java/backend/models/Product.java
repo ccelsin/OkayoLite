@@ -4,20 +4,19 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import lombok.Data;
 
 @Entity
 @Table(name = "products")
-@Getter
-@Setter
+@Data
 public class Product {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Name cannot be null")
     private String name;
 
     @Column(nullable = false, precision = 15, scale = 2)

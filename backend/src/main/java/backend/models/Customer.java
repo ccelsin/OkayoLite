@@ -3,38 +3,40 @@ package backend.models;
 import java.util.List;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
 
 
 @Entity
 @Table(name = "customers")
-@Getter
-@Setter
+@Data
 public class Customer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Name cannot be blank")
     private String name;
 
+    @NotBlank(message = "Email cannot be blank")
     private String email;
 
+    @NotBlank(message = "Phone number cannot be blank")
     private String phoneNumber;
 
-    @Column(nullable = false)
-    
+    @NotBlank(message = "Code cannot be blank")
+    @Pattern(regexp = "^CU\\d{4}-\\d{4}$", message = "Code must follow the pattern CUXXXX-XXXX where XXXX are digits")
     private String code;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Address cannot be blank")
     private String address;
 
-    @Column(nullable = false)
+    @NotBlank(message = "Postal code cannot be blank")
     private String postalCode;
 
-    @Column(nullable = false)
+    @NotBlank(message = "City cannot be blank")
     private String city;
 
     @OneToMany(mappedBy = "customer")
