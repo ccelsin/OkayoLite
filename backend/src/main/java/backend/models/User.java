@@ -3,6 +3,7 @@ package backend.models;
 import java.util.List;
 
 import backend.constants.UserRole;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -27,28 +28,30 @@ public class User {
     @NotNull(message = "Role cannot be null")
     private UserRole role;
 
-    @NotBlank(message = "Email cannot be null")
+    @Nullable
     private String email;
 
-    @NotBlank(message = "Phone number cannot be null")
-    private String Number;
+    @Nullable
+    private String phoneNumber;
 
-    @NotBlank(message = "Address cannot be null")
+    @Nullable
     private String address;
 
-    @NotBlank(message = "Postal code cannot be null")
+    @Nullable
     private String postalCode;
 
-    @NotBlank(message = "City cannot be null")
+    @Nullable
     private String city;
 
-    @NotBlank(message = "Website cannot be null")
+    @Nullable
     private String website;
 
     @OneToMany(mappedBy = "user")
+    @Nullable
     private List<PaymentDetails> paymentDetails;
 
     @OneToMany(mappedBy = "creator")
+    @Nullable
     private List<Invoice> invoices;
     
 }
