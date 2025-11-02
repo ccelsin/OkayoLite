@@ -1,6 +1,6 @@
 package backend.repositories;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 
@@ -12,7 +12,7 @@ import backend.models.Tva;
 @Repository
 public interface TvaRepository extends JpaRepository<Tva, Long> {
     
-    List<Tva> findAllByStartEvolutionDateNotNullAndFutureRateNotNullAndEvolutionAppliedFalseAndStartEvolutionDateLessThanEqual(LocalDate date);
+    List<Tva> findAllByStartEvolutionDateNotNullAndFutureRateNotNullAndEvolutionAppliedFalseAndStartEvolutionDateLessThanEqual(Date date);
 
-    List<Tva> findAllByEndEvolutionDateNotNullAndEvolutionAppliedTrueAndEndEvolutionDateLessThanEqual(LocalDate date);
+    List<Tva> findAllByEndEvolutionDateNotNullAndEvolutionAppliedTrueAndEndEvolutionDateLessThanEqual(Date date);
 }

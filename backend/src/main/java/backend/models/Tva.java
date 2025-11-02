@@ -1,7 +1,6 @@
 package backend.models;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -27,10 +26,10 @@ public class Tva {
     private BigDecimal futureRate;
 
     @Column(name = "start_evolution_date", nullable = true)
-    private LocalDate startEvolutionDate;
+    private Date startEvolutionDate;
 
     @Column(name = "end_evolution_date", nullable = true)
-    private LocalDate endEvolutionDate;
+    private Date endEvolutionDate;
 
     private Boolean evolutionApplied = false;
 

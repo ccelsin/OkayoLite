@@ -1,15 +1,16 @@
 package backend.dtos;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Date;
+
 
 public record TvaDto(
     Long id,
     BigDecimal previousRate,
     BigDecimal defaultRate,
     BigDecimal futureRate,
-    LocalDate startEvolutionDate,
-    LocalDate endEvolutionDate
+    Date startEvolutionDate,
+    Date endEvolutionDate
 
     ) {
     

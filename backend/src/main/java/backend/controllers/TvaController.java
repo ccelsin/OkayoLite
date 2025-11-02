@@ -13,9 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend.dtos.TvaDto;
-import backend.models.Tva;
 import backend.repositories.UserRepository;
-import backend.services.TvaMapperService;
 import backend.services.TvaService;
 import backend.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -51,14 +49,14 @@ public class TvaController {
         if(userService.isAdmin(request) == false) {
             return ResponseEntity.badRequest().body("Only admins can create TVA entries.");
         }
-        Tva savedTva = tvaService.saveTva(TvaMapperService.toEntity(tva));
+        TvaDto savedTva = tvaService.saveTva(tva);
         return ResponseEntity.ok(savedTva);
     }
 
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     public ResponseEntity<?> updateTva(@PathVariable Long id, @RequestBody TvaDto tvaDetails) {
-        Tva updatedTva = tvaService.setTva(id, TvaMapperService.toEntity(tvaDetails));
+        TvaDto updatedTva = tvaService.setTva(id, tvaDetails);
         return ResponseEntity.ok(updatedTva);
     }
 

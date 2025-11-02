@@ -1,6 +1,6 @@
 package backend.services;
 
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.scheduling.annotation.Scheduled;
@@ -17,38 +17,39 @@ public class TvaEvolutionScheduler {
 
     private final TvaRepository tvaRepository;
 
-    // Passe toutes les minutes (à adapter : toutes les heures, tous les jours, etc.)
-    @Scheduled(cron = "0 0 0 * * *")
+    // Every 1 hours
+    @Scheduled(fixedRate = 3600000)
 
     @Transactional
     public void applyPlannedEvolutions() {
-        LocalDate today = LocalDate.now();
+        Date today = new Date(System.currentTimeMillis());
 
-        // 1) Appliquer les évolutions dont la date de début est atteinte
+
+        // Apply evolutions whose start date is reached
         List<Tva> toApply = tvaRepository
             .findAllByStartEvolutionDateNotNullAndFutureRateNotNullAndEvolutionAppliedFalseAndStartEvolutionDateLessThanEqual(today);
 
         for (Tva tva : toApply) {
-            // Sauvegarde l’actuel comme previous
+            //Save default rate as previous
             tva.setPreviousRate(tva.getDefaultRate());
-            // Passe à future
+            // Apply new rate
             tva.setDefaultRate(tva.getFutureRate());
-            // Marque comme appliqué
+            // Mark as applied
             tva.setEvolutionApplied(true);
-            // On garde futureRate et dates pour gérer le revert à la fin
+            // Save changes
             tvaRepository.save(tva);
         }
 
-        // 2) Revenir à l’ancien taux pour celles dont la fin est atteinte
+        // Revert evolutions whose end date is reached
         List<Tva> toRevert = tvaRepository
             .findAllByEndEvolutionDateNotNullAndEvolutionAppliedTrueAndEndEvolutionDateLessThanEqual(today);
 
         for (Tva tva : toRevert) {
-            // Revenir
+            // Revert to previous rate
             if (tva.getPreviousRate() != null) {
                 tva.setDefaultRate(tva.getPreviousRate());
             }
-            // Nettoyage des champs de planning
+            // Clear evolution fields
             tva.setPreviousRate(null);
             tva.setFutureRate(null);
             tva.setStartEvolutionDate(null);

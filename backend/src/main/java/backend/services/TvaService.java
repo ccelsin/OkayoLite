@@ -30,30 +30,33 @@ public class TvaService {
         
     }
 
-    public Tva saveTva(Tva tva) {
-        return tvaRepository.save(tva);
+    public TvaDto saveTva(TvaDto tva) {
+        Tva tvaEntity = tvaRepository.save(TvaMapperService.toEntity(tva));
+        return TvaMapperService.toDto(tvaEntity);
     }
 
     @Transactional
-     Tva setTva(Long id, Tva tvaDetails) {
+     public TvaDto setTva(Long id, TvaDto tvaDetails) {
         return tvaRepository.findById(id).map(tva -> {
             // Update fields
-            tva.setFutureRate(tvaDetails.getFutureRate());
-            tva.setStartEvolutionDate(tvaDetails.getStartEvolutionDate());
-            tva.setEndEvolutionDate(tvaDetails.getEndEvolutionDate());
+            tva.setFutureRate(tvaDetails.futureRate());
+            tva.setStartEvolutionDate(tvaDetails.startEvolutionDate());
+            tva.setEndEvolutionDate(tvaDetails.endEvolutionDate());
 
             tva.setEvolutionApplied(false);
 
-            // On peut aussi mettre à jour defaultRate maintenant si aucun planning
+            
             if (tva.getStartEvolutionDate() == null && tva.getFutureRate() != null) {
-                // Cas de mise à jour immédiate (optionnel)
+                // Case where evolution is applied immediately
                 tva.setPreviousRate(tva.getDefaultRate());
                 tva.setDefaultRate(tva.getFutureRate());
                 tva.setFutureRate(null);
                 tva.setEvolutionApplied(false);
             }
 
-            return tvaRepository.save(tva);
+            Tva tvaEntity = tvaRepository.save(tva);
+
+            return TvaMapperService.toDto(tvaEntity);
         }).orElseThrow(() -> new EntityNotFoundException("Tva " + id + " introuvable"));
 }   
 
