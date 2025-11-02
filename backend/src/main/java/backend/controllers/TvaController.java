@@ -64,8 +64,14 @@ public class TvaController {
 
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTva(@PathVariable Long id) {
+    public ResponseEntity<?> deleteTva(@PathVariable Long id) {
+        try {
+            tvaService.getTva(id);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
         tvaService.deleteTva(id);
+
         return ResponseEntity.noContent().build();
     }
     
