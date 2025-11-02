@@ -1,5 +1,7 @@
 package backend.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,7 +35,7 @@ public class TvaController {
         if (userService.isAuthorized(request) == false) {
             return ResponseEntity.status(401).body("Acces denied");
         }
-        java.util.List<TvaDto> tvaList = tvaService.getAllTva();
+        List<TvaDto> tvaList = tvaService.getAllTva();
         return ResponseEntity.ok(tvaList);
     }
 
