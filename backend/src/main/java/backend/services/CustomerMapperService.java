@@ -1,5 +1,8 @@
 package backend.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import backend.dtos.CustomerDto;
@@ -32,6 +35,14 @@ public class CustomerMapperService {
         customer.setPostalCode(customerDto.postalCode());
         customer.setCity(customerDto.city());
         return customer;
+    }
+
+    public static List<CustomerDto> toDtoList(List<Customer> customers) {
+        List<CustomerDto> customerDtos = new ArrayList<>();
+        for (Customer customer : customers) {
+            customerDtos.add(toDto(customer));
+        }
+        return customerDtos;
     }
     
 }

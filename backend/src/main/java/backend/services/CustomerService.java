@@ -8,6 +8,8 @@ import backend.dtos.CustomerDto;
 import backend.models.Customer;
 import backend.repositories.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 import java.util.Optional;
 
 
@@ -19,9 +21,9 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
 
     // Create a customer
-    public CustomerDto save(CustomerDto customer){
+    public CustomerDto saveCustomer(CustomerDto customer){
         String code = generateCode(customer);
-        CustomerDto customerUpdated = new CustomerDto(customer.id(), customer.name(), customer.email(), customer.phoneNumber(), code, customer.address(), customer.postalCode(), customer.city());
+        CustomerDto customerUpdated = new CustomerDto(null, customer.name(), customer.email(), customer.phoneNumber(), code, customer.address(), customer.postalCode(), customer.city());
         Customer customerEntity = customerRepository.save(CustomerMapperService.toEntity(customerUpdated));
         return CustomerMapperService.toDto(customerEntity);
     }
@@ -45,6 +47,30 @@ public class CustomerService {
         }
             return code;
     
+    }
+
+    public CustomerDto getCustomer(Long id) {
+        Optional<Customer> customer = customerRepository.findById(id);
+        return customer.map(CustomerMapperService::toDto).orElse(null);
+    }
+
+    public List<CustomerDto> getAllCustomer() {
+        List<Customer> customers = customerRepository.findAll();
+        return CustomerMapperService.toDtoList(customers);
+    }
+
+    public CustomerDto setCustomer(Long id, CustomerDto customerDetails) {
+        Customer updatedCustomer = customerRepository.findById(id).map(customer -> {
+            customer.setName(customerDetails.name());
+            customer.setEmail(customerDetails.email());
+            customer.setPhoneNumber(customerDetails.phoneNumber());
+            customer.setAddress(customerDetails.address());
+            customer.setPostalCode(customerDetails.postalCode());
+            customer.setCity(customerDetails.city());
+            return customerRepository.save(customer);
+        }).orElse(null);
+
+        return updatedCustomer != null ? CustomerMapperService.toDto(updatedCustomer) : null;
     }
 
     

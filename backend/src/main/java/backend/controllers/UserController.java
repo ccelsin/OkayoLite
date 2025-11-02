@@ -56,9 +56,8 @@ public class UserController {
         }
 
         var updatedUser = UserMapperService.toEntity(updatedUserDto);
-
-        var userDto = userService.setProfile(userId, updatedUser);
-        return ResponseEntity.ok(userDto);
+        userService.setProfile(userId, updatedUser);
+        return ResponseEntity.status(200).body("Profile updated. You have to login now");
     }
 
     

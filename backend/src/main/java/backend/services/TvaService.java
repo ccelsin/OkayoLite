@@ -31,7 +31,8 @@ public class TvaService {
     }
 
     public TvaDto saveTva(TvaDto tva) {
-        Tva tvaEntity = tvaRepository.save(TvaMapperService.toEntity(tva));
+        TvaDto tvaUpdated = new TvaDto(null, tva.previousRate(),tva.defaultRate(), tva.futureRate(), tva.startEvolutionDate(),tva.endEvolutionDate());
+        Tva tvaEntity = tvaRepository.save(TvaMapperService.toEntity(tvaUpdated));
         return TvaMapperService.toDto(tvaEntity);
     }
 

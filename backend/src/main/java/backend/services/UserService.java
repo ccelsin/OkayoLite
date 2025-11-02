@@ -36,13 +36,19 @@ public class UserService {
         return UserMapperService.toDto(userProfile);
     }
 
+    public Long extractUserIdFromRequest(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        String token = authHeader.substring(7);
+        return extractUserIdFromToken(token);
+    }
+
     public Long extractUserIdFromToken(String token) {
         String username = jwtUtils.extractUsername(token);
             User user = userRepository.findByUsername(username);
             if (user != null) {
                 return Long.valueOf(user.getId());
             }
-        return null; // Placeholder return
+        return null; 
     }
 
     public boolean isAuthorized(HttpServletRequest request) {

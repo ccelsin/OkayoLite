@@ -1,7 +1,5 @@
 package backend.controllers;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +29,10 @@ public class TvaController {
 
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping
-    public ResponseEntity<List<?>> getAllTva() {
+    public ResponseEntity<?> getAllTva(HttpServletRequest request) {
+        if (userService.isAuthorized(request) == false) {
+            return ResponseEntity.status(401).body("Acces denied");
+        }
         java.util.List<TvaDto> tvaList = tvaService.getAllTva();
         return ResponseEntity.ok(tvaList);
     }
@@ -45,7 +46,7 @@ public class TvaController {
 
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
-    public ResponseEntity<?> createTva(HttpServletRequest request, @RequestBody TvaDto tva) {
+    public ResponseEntity<?> saveTva(HttpServletRequest request, @RequestBody TvaDto tva) {
         if(userService.isAdmin(request) == false) {
             return ResponseEntity.badRequest().body("Only admins can create TVA entries.");
         }
@@ -55,8 +56,12 @@ public class TvaController {
 
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateTva(@PathVariable Long id, @RequestBody TvaDto tvaDetails) {
-        TvaDto updatedTva = tvaService.setTva(id, tvaDetails);
+    public ResponseEntity<?> setTva(HttpServletRequest request, @RequestBody TvaDto tvaDetails) {
+        if (userService.isAuthorized(request) == false) {
+            return ResponseEntity.status(401).body("Acces denied");
+        }
+        Long userId = userService.extractUserIdFromRequest(request);
+        TvaDto updatedTva = tvaService.setTva(userId, tvaDetails);
         return ResponseEntity.ok(updatedTva);
     }
 
