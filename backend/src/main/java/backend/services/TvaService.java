@@ -1,6 +1,7 @@
 package backend.services;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,28 +38,39 @@ public class TvaService {
     }
 
     @Transactional
-     public TvaDto setTva(Long id, TvaDto tvaDetails) {
-        return tvaRepository.findById(id).map(tva -> {
+     public TvaDto setTva(TvaDto tvaDetails) {
+        return tvaRepository.findById(tvaDetails.id()).map(tva -> {
             // Update fields
+            tva.setDefaultRate(tvaDetails.defaultRate());
+            tva.setPreviousRate(tvaDetails.previousRate());
             tva.setFutureRate(tvaDetails.futureRate());
             tva.setStartEvolutionDate(tvaDetails.startEvolutionDate());
             tva.setEndEvolutionDate(tvaDetails.endEvolutionDate());
 
             tva.setEvolutionApplied(false);
+            Date now = new Date(System.currentTimeMillis());
 
-            
-            if (tva.getStartEvolutionDate() == null && tva.getFutureRate() != null) {
+        if ((tva.getStartEvolutionDate().before(now) || tva.getStartEvolutionDate().equals(now)
+                || tva.getEndEvolutionDate().before(now))
+                && tva.getFutureRate() != null) {
                 // Case where evolution is applied immediately
                 tva.setPreviousRate(tva.getDefaultRate());
+
                 tva.setDefaultRate(tva.getFutureRate());
                 tva.setFutureRate(null);
                 tva.setEvolutionApplied(false);
+
+
+            }else if ((tva.getStartEvolutionDate().before(now) || tva.getStartEvolutionDate().equals(now)
+                || tva.getEndEvolutionDate().before(now))
+                && tva.getFutureRate() == null) {
+                    tva.setDefaultRate(tva.getPreviousRate());
             }
 
             Tva tvaEntity = tvaRepository.save(tva);
 
             return TvaMapperService.toDto(tvaEntity);
-        }).orElseThrow(() -> new EntityNotFoundException("Tva " + id + " introuvable"));
+        }).orElseThrow(() -> new EntityNotFoundException("Tva not found"));
 }   
 
 

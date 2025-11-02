@@ -59,8 +59,8 @@ public class CustomerService {
         return CustomerMapperService.toDtoList(customers);
     }
 
-    public CustomerDto setCustomer(Long id, CustomerDto customerDetails) {
-        Customer updatedCustomer = customerRepository.findById(id).map(customer -> {
+    public CustomerDto setCustomer(CustomerDto customerDetails) {
+        Customer updatedCustomer = customerRepository.findById(customerDetails.id()).map(customer -> {
             customer.setName(customerDetails.name());
             customer.setEmail(customerDetails.email());
             customer.setPhoneNumber(customerDetails.phoneNumber());

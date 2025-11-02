@@ -60,8 +60,7 @@ public class CustomerController {
         if (userService.isAuthorized(request) == false) {
             return ResponseEntity.status(401).body("Acess denied");
         }
-        Long userId = userService.extractUserIdFromRequest(request);
-        CustomerDto updatedCustomer = customerService.setCustomer(userId, customerDto);
+        CustomerDto updatedCustomer = customerService.setCustomer(customerDto);
         if (updatedCustomer == null) {
             return ResponseEntity.badRequest().body("This customer doesn't exist");
         }

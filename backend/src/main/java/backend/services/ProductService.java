@@ -43,8 +43,8 @@ public class ProductService {
         return ProductMapperService.toDtoList(products);
     }
 
-    public ProductDto setProductDetails(Long id, ProductDto productDetails) {
-        Product updatedProduct = productRepository.findById(id).map(product -> {
+    public ProductDto setProductDetails(ProductDto productDetails) {
+        Product updatedProduct = productRepository.findById(productDetails.id()).map(product -> {
             product.setName(productDetails.name());
             product.setUnitPriceHT(productDetails.unitPriceHT());
             if (productDetails.tvaId() != null) {

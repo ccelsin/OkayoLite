@@ -62,8 +62,7 @@ public class TvaController {
         if (userService.isAuthorized(request) == false) {
             return ResponseEntity.status(401).body("Acces denied");
         }
-        Long userId = userService.extractUserIdFromRequest(request);
-        TvaDto updatedTva = tvaService.setTva(userId, tvaDetails);
+        TvaDto updatedTva = tvaService.setTva(tvaDetails);
         return ResponseEntity.ok(updatedTva);
     }
 

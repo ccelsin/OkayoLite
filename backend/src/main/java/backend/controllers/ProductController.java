@@ -63,12 +63,11 @@ public class ProductController {
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     public ResponseEntity<?> setProduct(HttpServletRequest request, @RequestBody ProductDto productDto) {
-        if (userService.isAdmin(request) == false) {
+        if (userService.isAuthorized(request) == false) {
             return ResponseEntity.status(401).body("Acces denied");
         }
 
-        Long userId = userService.extractUserIdFromRequest(request);
-        ProductDto updatedProduct = productService.setProductDetails(userId, productDto);
+        ProductDto updatedProduct = productService.setProductDetails(productDto);
         if (updatedProduct == null) {
             return ResponseEntity.badRequest().body("This product doesn't exist");
         }

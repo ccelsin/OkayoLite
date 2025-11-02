@@ -2,6 +2,7 @@ package backend.models;
 
 import java.util.List;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -20,10 +21,10 @@ public class Customer {
     @NotBlank(message = "Name cannot be blank")
     private String name;
 
-    @NotBlank(message = "Email cannot be blank")
+    @Nullable
     private String email;
 
-    @NotBlank(message = "Phone number cannot be blank")
+    @Nullable
     private String phoneNumber;
 
     @NotBlank(message = "Code cannot be blank")
@@ -31,13 +32,13 @@ public class Customer {
     @Pattern(regexp = "^CU\\d{4}-\\d{4}$", message = "Code must follow the pattern CUXXXX-XXXX where XXXX are digits")
     private String code;
 
-    @NotBlank(message = "Address cannot be blank")
+    @Nullable
     private String address;
 
-    @NotBlank(message = "Postal code cannot be blank")
+    @Nullable
     private String postalCode;
 
-    @NotBlank(message = "City cannot be blank")
+    @Nullable
     private String city;
 
     @OneToMany(mappedBy = "customer")
