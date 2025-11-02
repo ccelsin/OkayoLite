@@ -1,11 +1,15 @@
 package backend.services;
 
+import java.util.Random;
+
 import org.springframework.stereotype.Service;
 
 import backend.dtos.CustomerDto;
 import backend.models.Customer;
 import backend.repositories.CustomerRepository;
 import lombok.RequiredArgsConstructor;
+import java.util.Optional;
+
 
 
 @Service
@@ -14,9 +18,34 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
+    // Create a customer
     public CustomerDto save(CustomerDto customer){
-        Customer customerEntity = customerRepository.save(CustomerMapperService.toEntity(customer));
+        String code = generateCode(customer);
+        CustomerDto customerUpdated = new CustomerDto(customer.id(), customer.name(), customer.email(), customer.phoneNumber(), code, customer.address(), customer.postalCode(), customer.city());
+        Customer customerEntity = customerRepository.save(CustomerMapperService.toEntity(customerUpdated));
         return CustomerMapperService.toDto(customerEntity);
     }
+
+    public String generateCode(CustomerDto customerDto) {
+        Random random = new Random();
+
+        // Create random nomber
+        String part1 = String.format("%04d", random.nextInt(10000)); // 0000 → 9999
+        String part2 = String.format("%04d", random.nextInt(10000)); // 0000 → 9999
+
+        // Build the final code
+        String code = "CU" + part1 + "-" + part2;
+
+        // Check if this code already exists
+        Optional <Customer> customerOpt = customerRepository.findByCode(code);
+        if(customerOpt.isPresent())
+        {
+            // Regenarate the code it already exists
+                return generateCode(customerDto);
+        }
+            return code;
+    
+    }
+
     
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backend.dtos.CustomerDto;
 import backend.services.CustomerService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -16,7 +17,8 @@ import lombok.RequiredArgsConstructor;
 public class CustomerController {
     
     private final CustomerService customerService;
-
+    
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<?> save (@RequestBody CustomerDto customerDto){
         CustomerDto savedCustomer = customerService.save(customerDto);

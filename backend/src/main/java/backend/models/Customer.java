@@ -27,6 +27,7 @@ public class Customer {
     private String phoneNumber;
 
     @NotBlank(message = "Code cannot be blank")
+    @Column(unique = true)
     @Pattern(regexp = "^CU\\d{4}-\\d{4}$", message = "Code must follow the pattern CUXXXX-XXXX where XXXX are digits")
     private String code;
 
