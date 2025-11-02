@@ -22,6 +22,7 @@ public class UserService {
     
     public UserDto updateProfile(Long userId, User updatedUser) {
         var userProfile = userRepository.findById(userId).map(user -> {
+            user.setUsername(updatedUser.getUsername());
             user.setEmail(updatedUser.getEmail());
             user.setPhoneNumber(updatedUser.getPhoneNumber());
             user.setAddress(updatedUser.getAddress());

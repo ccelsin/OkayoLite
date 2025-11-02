@@ -21,6 +21,20 @@ public class UserMapperService {
             user.getWebsite()
         );
     }
+
+    public static User toEntity(UserDto user){
+        
+        User entity = new User();
+        entity.setId(user.id());
+        entity.setUsername(user.username());
+        entity.setEmail(user.email());
+        entity.setPhoneNumber(user.phoneNumber());
+        entity.setAddress(user.address());
+        entity.setPostalCode(user.postalCode());
+        entity.setCity(user.city());
+        entity.setWebsite(user.website());
+        return entity;
+    }
     
 }
 

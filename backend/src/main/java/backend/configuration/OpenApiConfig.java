@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Bean;
 
 @Configuration
 @OpenAPIDefinition(
-    info = @Info(title = "Ping API", version = "1.0", description = "API documentation with JWT"),
+    info = @Info(title = "OkayoLite API", version = "1.0", description = "API documentation with JWT"),
     security = @io.swagger.v3.oas.annotations.security.SecurityRequirement(name = "bearerAuth")
 )
 @SecurityScheme(
