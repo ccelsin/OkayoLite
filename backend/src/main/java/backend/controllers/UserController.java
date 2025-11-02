@@ -29,7 +29,7 @@ public class UserController {
     @GetMapping("/profile")
     public ResponseEntity<?> getProfile(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (userService.isAuthorized(request) == false) {
             return ResponseEntity.status(401).body("Missing or invalid Authorization header");
         }
 
@@ -39,7 +39,7 @@ public class UserController {
             return ResponseEntity.status(401).body("Invalid token");
         }
 
-        var userDto = userService.readProfile(userId);
+        var userDto = userService.getProfile(userId);
         return ResponseEntity.ok(userDto);
     }
 
@@ -47,7 +47,7 @@ public class UserController {
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(HttpServletRequest request, @RequestBody UserDto updatedUserDto) {
         String authHeader = request.getHeader("Authorization");
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (userService.isAuthorized(request) == false) {
             return ResponseEntity.status(401).body("Missing or invalid Authorization header");
         }
 
@@ -59,7 +59,7 @@ public class UserController {
 
         var updatedUser = UserMapperService.toEntity(updatedUserDto);
 
-        var userDto = userService.updateProfile(userId, updatedUser);
+        var userDto = userService.setProfile(userId, updatedUser);
         return ResponseEntity.ok(userDto);
     }
 
