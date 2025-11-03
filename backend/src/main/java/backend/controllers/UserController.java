@@ -1,7 +1,10 @@
 package backend.controllers;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backend.configuration.JwtUtils;
 import backend.dtos.UserDto;
+import backend.models.User;
+import backend.repositories.UserRepository;
 import backend.services.UserMapperService;
 import backend.services.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -21,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 
     private final UserService userService;
+    private final UserRepository userRepository;
+
     private final JwtUtils jwtUtil;
 
     @SecurityRequirement(name = "bearerAuth")
@@ -54,10 +61,24 @@ public class UserController {
         if (userId == null) {
             return ResponseEntity.status(401).body("Invalid token");
         }
-
-        var updatedUser = UserMapperService.toEntity(updatedUserDto);
-        userService.setProfile(userId, updatedUser);
+        userService.setProfile(userId, updatedUserDto);
         return ResponseEntity.status(200).body("Profile updated. You have to login now");
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/{id}")
+    public ResponseEntity<?> get(@PathVariable Long id) {
+        
+        UserDto customer = userService.getUser(id);
+        if (customer == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(customer);
+    }
+
+    public List<UserDto> getAllCustomer() {
+        List<User> customers = userRepository.findAll();
+        return UserMapperService.toDtoList(customers);
     }
 
     

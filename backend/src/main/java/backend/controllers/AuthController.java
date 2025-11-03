@@ -21,6 +21,7 @@ import backend.dtos.AuthUserDto;
 import backend.dtos.RegisterDto;
 import backend.models.User;
 import backend.repositories.UserRepository;
+import backend.services.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -34,10 +35,11 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtils jwtUtils;
     private final AuthenticationManager authenticationManager;
+    private final UserService userService;
     
 
     @PostMapping("/register")
-    public ResponseEntity <?> register(@RequestBody RegisterDto authUserDto ) {
+    public ResponseEntity <?> register(@RequestBody RegisterDto authUserDto) {
         try {
             if (userRepository.findByUsername(authUserDto.username()) != null) {
             return ResponseEntity.badRequest().body("Username is already taken");
@@ -46,8 +48,12 @@ public class AuthController {
         user.setUsername( authUserDto.username() );
         user.setPassword(passwordEncoder.encode(authUserDto.password()));
          UserRole role = authUserDto.role() != null ? authUserDto.role() : UserRole.ADMIN;
-        user.setRole(role);   
-        
+        user.setRole(role);
+        if(role == UserRole.CUSTOMER){
+            String code = userService.generateCode();
+            user.setCodeCustomer(code);
+        }
+
         return ResponseEntity.ok(userRepository.save(user));
         } catch (Exception e) {
             e.printStackTrace();

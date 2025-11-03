@@ -32,7 +32,7 @@ public class Invoice {
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
-    private Customer customer;
+    private User customer;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

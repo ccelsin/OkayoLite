@@ -5,6 +5,7 @@ public record UserDto  (
     String username,
     String email,
     String phoneNumber,
+    String codeCustomer,
     String address,
     String postalCode,
     String city,

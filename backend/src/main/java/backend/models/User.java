@@ -2,6 +2,8 @@ package backend.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import backend.constants.UserRole;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -36,6 +38,9 @@ public class User {
     @Nullable
     private String phoneNumber;
 
+    
+    private String codeCustomer;
+
     @Nullable
     private String address;
 
@@ -52,8 +57,19 @@ public class User {
     @Nullable
     private List<PaymentDetails> paymentDetails;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "creator")
     @Nullable
     private List<Invoice> invoices;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "customer")
+    @Nullable
+    private List<Invoice> customerInvoices;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "purchaser")
+    @Nullable
+    private List<Purchase> customerPurchases;
     
 }
