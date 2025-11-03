@@ -44,11 +44,14 @@ public class Purchase {
 
     @JsonIgnore
     @ManyToOne
-    @JoinColumn(name = "invoice_id", nullable = false)
+    @JoinColumn(name = "invoice_id")
     private Invoice invoice;
 
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User purchaser;
+
+    @Column(nullable = false)
+    private boolean isConfirmed = false;
 }

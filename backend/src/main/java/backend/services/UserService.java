@@ -32,6 +32,9 @@ public class UserService {
     
     public Long extractUserIdFromRequest(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return null;
+        }
         String token = authHeader.substring(7);
         return extractUserIdFromToken(token);
     }
@@ -83,6 +86,17 @@ public class UserService {
     public List<UserDto> getAllUser() {
         List<User> users = userRepository.findAll();
         return UserMapperService.toDtoList(users);
+    }
+
+     public boolean isCustomer(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return false;
+        }
+        String token = authHeader.substring(7);
+        String username = jwtUtils.extractUsername(token);
+        User user = userRepository.findByUsername(username);
+        return user != null && user.getRole() == UserRole.CUSTOMER;
     }
 
     public String generateCode() {
