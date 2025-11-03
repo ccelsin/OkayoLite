@@ -18,7 +18,7 @@ public class TvaEvolutionScheduler {
     private final TvaRepository tvaRepository;
 
     // Every 1 hours
-    @Scheduled(fixedRate = 3600)
+    @Scheduled(fixedRate = 3600000)
 
     @Transactional
     public void applyPlannedEvolutions() {

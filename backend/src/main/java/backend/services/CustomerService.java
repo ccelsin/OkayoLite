@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import backend.dtos.CustomerDto;
 import backend.models.Customer;
 import backend.repositories.CustomerRepository;
+import backend.utilities.BeanCopyUtils;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
@@ -59,18 +60,12 @@ public class CustomerService {
         return CustomerMapperService.toDtoList(customers);
     }
 
-    public CustomerDto setCustomer(CustomerDto customerDetails) {
-        Customer updatedCustomer = customerRepository.findById(customerDetails.id()).map(customer -> {
-            customer.setName(customerDetails.name());
-            customer.setEmail(customerDetails.email());
-            customer.setPhoneNumber(customerDetails.phoneNumber());
-            customer.setAddress(customerDetails.address());
-            customer.setPostalCode(customerDetails.postalCode());
-            customer.setCity(customerDetails.city());
-            return customerRepository.save(customer);
-        }).orElse(null);
+    public CustomerDto setCustomer(CustomerDto customerDto) {
+        Customer customer = customerRepository.findById(customerDto.id()).orElse(null);
 
-        return updatedCustomer != null ? CustomerMapperService.toDto(updatedCustomer) : null;
+        BeanCopyUtils.copyNonNullProperties(customerDto, customer);
+
+        return customer != null ? CustomerMapperService.toDto(customer) : null;
     }
 
     

@@ -1,7 +1,6 @@
 package backend.services;
 
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 
 import backend.dtos.PaymentDetailsDto;
@@ -10,6 +9,7 @@ import backend.models.PaymentDetails;
 import backend.models.User;
 import backend.repositories.PaymentDetailsRepository;
 import backend.repositories.UserRepository;
+import backend.utilities.BeanCopyUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -60,12 +60,8 @@ public class PaymentDetailsService {
         PaymentDetails paymentDetails = paymentDetailsRepository.findById(paymentDetailsDto.id())
             .orElseThrow(() -> new EntityNotFoundException("Payment details not found"));
             
-        paymentDetails.setPaymentName(paymentDetailsDto.paymentName());
-        paymentDetails.setPaymentTerm(paymentDetailsDto.paymentTerm());
-        paymentDetails.setDomiciliation(paymentDetailsDto.domiciliation());
-        paymentDetails.setHolderName(paymentDetailsDto.holderName());
-        paymentDetails.setIban(paymentDetailsDto.iban());
-        paymentDetails.setBic(paymentDetailsDto.bic());
+        BeanCopyUtils.copyNonNullProperties(paymentDetailsDto, paymentDetails);
+        
         paymentDetails.setUser(userFound);
         
         PaymentDetails savedPaymentDetails = paymentDetailsRepository.save(paymentDetails);
@@ -80,4 +76,5 @@ public class PaymentDetailsService {
         return userRepository.findById(userId)
             .orElseThrow(() -> new EntityNotFoundException("User " + userId + " not found"));
     }
-}
+    
+}   

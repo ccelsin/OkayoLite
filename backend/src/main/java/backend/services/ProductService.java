@@ -9,6 +9,7 @@ import backend.models.Product;
 import backend.models.Tva;
 import backend.repositories.ProductRepository;
 import backend.repositories.TvaRepository;
+import backend.utilities.BeanCopyUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -44,15 +45,21 @@ public class ProductService {
     }
 
     public ProductDto setProductDetails(ProductDto productDetails) {
-        Product updatedProduct = productRepository.findById(productDetails.id()).map(product -> {
-            product.setName(productDetails.name());
-            product.setUnitPriceHT(productDetails.unitPriceHT());
-            if (productDetails.tvaId() != null) {
-                Tva tva = resolveTva(productDetails.tvaId());
-                product.setTva(tva);
-            }
-            return productRepository.save(product);
-        }).orElse(null);
+        Product updatedProduct = productRepository.findById(productDetails.id())
+            .map(product -> {
+        // copy not null properties of dto set entity with them
+        BeanCopyUtils.copyNonNullProperties(productDetails, product);
+
+        // get tva data by his id
+        if (productDetails.tvaId() != null) {
+            Tva tva = resolveTva(productDetails.tvaId());
+            product.setTva(tva);
+        }
+
+        return productRepository.save(product);
+    })
+    .orElseThrow(() -> new EntityNotFoundException("Product not found with id " + productDetails.id()));
+
 
         return updatedProduct != null ? ProductMapperService.toDto(updatedProduct) : null;
     }
