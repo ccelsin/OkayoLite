@@ -16,6 +16,7 @@ import backend.dtos.TvaDto;
 import backend.repositories.UserRepository;
 import backend.services.TvaService;
 import backend.services.UserService;
+import backend.utilities.ResponseUtils;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class TvaController {
     @GetMapping
     public ResponseEntity<?> getAllTva(HttpServletRequest request) {
         if (userService.isAuthorized(request) == false) {
-            return ResponseEntity.badRequest().body("Acces denied");
+            return ResponseUtils.unauthorized("Access denied");
         }
         List<TvaDto> tvaList = tvaService.getAllTva();
         return ResponseEntity.ok(tvaList);
@@ -43,7 +44,7 @@ public class TvaController {
     @GetMapping("/{id}")
     public ResponseEntity<?> getTva(HttpServletRequest request,@PathVariable Long id) {
         if(userService.isAdmin(request) == false) {
-            return ResponseEntity.badRequest().body("Only admins can create TVA.");
+            return ResponseUtils.forbidden("Only admins can access TVA details.");
         }
         TvaDto tva = tvaService.getTva(id);
         return ResponseEntity.ok(tva);
@@ -53,7 +54,7 @@ public class TvaController {
     @PostMapping
     public ResponseEntity<?> saveTva(HttpServletRequest request, @RequestBody TvaDto tva) {
         if(userService.isAdmin(request) == false) {
-            return ResponseEntity.badRequest().body("Only admins can create TVA entries.");
+            return ResponseUtils.forbidden("Only admins can access TVA details.");
         }
         TvaDto savedTva = tvaService.saveTva(tva);
         return ResponseEntity.ok(savedTva);
@@ -63,7 +64,7 @@ public class TvaController {
     @PutMapping("/{id}")
     public ResponseEntity<?> setTva(HttpServletRequest request, @RequestBody TvaDto tvaDetails) {
         if (userService.isAuthorized(request) == false) {
-            return ResponseEntity.status(401).body("Acces denied");
+            return ResponseUtils.unauthorized("Access denied");
         }
         TvaDto updatedTva = tvaService.setTva(tvaDetails);
         return ResponseEntity.ok(updatedTva);
@@ -72,10 +73,9 @@ public class TvaController {
     @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteTva(@PathVariable Long id) {
-        try {
-            tvaService.getTva(id);
-        } catch (RuntimeException e) {
-            return ResponseEntity.notFound().build();
+       TvaDto tva = tvaService.getTva(id);
+        if (tva == null) {
+            return ResponseUtils.notFound("Tva not found with id " + id);
         }
         tvaService.deleteTva(id);
 

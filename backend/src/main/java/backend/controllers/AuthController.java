@@ -3,7 +3,6 @@ package backend.controllers;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -22,6 +21,7 @@ import backend.dtos.RegisterDto;
 import backend.models.User;
 import backend.repositories.UserRepository;
 import backend.services.UserService;
+import backend.utilities.ResponseUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -42,22 +42,22 @@ public class AuthController {
     public ResponseEntity <?> register(@RequestBody RegisterDto authUserDto) {
         try {
             if (userRepository.findByUsername(authUserDto.username()) != null) {
-            return ResponseEntity.badRequest().body("Username is already taken");
-        }
-        User user = new User();
-        user.setUsername( authUserDto.username() );
-        user.setPassword(passwordEncoder.encode(authUserDto.password()));
-         UserRole role = authUserDto.role() != null ? authUserDto.role() : UserRole.ADMIN;
-        user.setRole(role);
-        if(role == UserRole.CUSTOMER){
-            String code = userService.generateCode();
-            user.setCodeCustomer(code);
-        }
-        userRepository.save(user);
-        return ResponseEntity.ok(authUserDto);
+                return ResponseUtils.conflict("Username is already taken");
+            }
+            User user = new User();
+            user.setUsername(authUserDto.username());
+            user.setPassword(passwordEncoder.encode(authUserDto.password()));
+            UserRole role = authUserDto.role() != null ? authUserDto.role() : UserRole.ADMIN;
+            user.setRole(role);
+            if (role == UserRole.CUSTOMER) {
+                String code = userService.generateCode();
+                user.setCodeCustomer(code);
+            }
+            userRepository.save(user);
+            return ResponseEntity.ok(authUserDto);
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Failed to register user");
+            log.error("Failed to register user", e);
+            return ResponseUtils.internalServerError("Failed to register user");
         }
         
     }
@@ -73,11 +73,11 @@ public class AuthController {
                 authData.put("type", "Bearer");
                 return ResponseEntity.ok(authData);
             } 
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                return ResponseUtils.unauthorized("Invalid username or password");
 
         } catch (AuthenticationException e) {
             log.error(e.getMessage());
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid username or password");
+            return ResponseUtils.unauthorized("Invalid username or password");
         }
     }
     

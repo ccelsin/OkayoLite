@@ -32,6 +32,7 @@ public class User {
     @NotNull(message = "Role cannot be null")
     private UserRole role;
 
+    @Email(message="Must be a mail")
     @Nullable
     private String email;
 

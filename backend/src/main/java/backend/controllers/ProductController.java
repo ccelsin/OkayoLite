@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.RestController;
 import backend.dtos.ProductDto;
 import backend.services.ProductService;
 import backend.services.UserService;
+
+import backend.utilities.ResponseUtils;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +34,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<?> saveProduct(HttpServletRequest request, @RequestBody ProductDto productDto) {
         if (userService.isAdmin(request) == false) {
-            return ResponseEntity.status(401).body("Only admins can create product.");
+            return ResponseUtils.forbidden("Only admins can create product.");
         }
         ProductDto savedProduct = productService.saveProductDetails(productDto);
         return ResponseEntity.ok(savedProduct);
@@ -42,7 +45,7 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<?> getAllProducts(HttpServletRequest request) {
         if (userService.isAuthorized(request) == false) {
-            return ResponseEntity.status(401).body("Acces denied");
+            return ResponseUtils.unauthorized("Access denied");
         }
         List<ProductDto> products = productService.getAllProductDetails();
         return ResponseEntity.ok(products);
@@ -54,7 +57,7 @@ public class ProductController {
     public ResponseEntity<?> getProduct(@PathVariable Long id) {
         ProductDto product = productService.getProductDetails(id);
         if (product == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseUtils.notFound("Product not found with id " + id);
         }
         return ResponseEntity.ok(product);
     }
@@ -64,12 +67,12 @@ public class ProductController {
     @PutMapping("/{id}")
     public ResponseEntity<?> setProduct(HttpServletRequest request, @RequestBody ProductDto productDto) {
         if (userService.isAuthorized(request) == false) {
-            return ResponseEntity.status(401).body("Acces denied");
+            return ResponseUtils.unauthorized("Access denied");
         }
 
         ProductDto updatedProduct = productService.setProductDetails(productDto);
         if (updatedProduct == null) {
-            return ResponseEntity.badRequest().body("This product doesn't exist");
+            return ResponseUtils.badRequest("This product doesn't exist");
         }
         return ResponseEntity.ok(updatedProduct);
     }

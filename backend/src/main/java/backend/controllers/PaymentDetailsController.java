@@ -13,8 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backend.dtos.PaymentDetailsDto;
 import backend.dtos.PaymentDetailsRequest;
+
 import backend.services.PaymentDetailsService;
 import backend.services.UserService;
+
+import backend.utilities.ResponseUtils;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +36,7 @@ public class PaymentDetailsController {
     @PostMapping
     public ResponseEntity<?> savePaymentDetails(HttpServletRequest request, @RequestBody PaymentDetailsRequest paymentDetailsRequest) {
         if (userService.isAdmin(request) == false) {
-            return ResponseEntity.status(401).body("Only admins can create payment method deteils");
+            return ResponseUtils.forbidden("Only admins can create payment method details");
         }
 
         Long userId = userService.extractUserIdFromRequest(request);
@@ -45,7 +49,7 @@ public class PaymentDetailsController {
     @GetMapping
     public ResponseEntity<?> getAllPaymentDetails(HttpServletRequest request) {
         if (userService.isAuthorized(request) == false) {
-            return ResponseEntity.status(401).body("Acces denied");
+            return ResponseUtils.unauthorized("Access denied");
         }
         List<PaymentDetailsDto> paymentDetails = paymentDetailsService.getAllPaymentDetails();
         return ResponseEntity.ok(paymentDetails);
@@ -57,7 +61,7 @@ public class PaymentDetailsController {
     public ResponseEntity<?> getPaymentDetails(@PathVariable Long id) {
         PaymentDetailsDto paymentDetails = paymentDetailsService.getPaymentDetails(id);
         if (paymentDetails == null) {
-            return ResponseEntity.notFound().build();
+            return ResponseUtils.unauthorized("Access denied");
         }
         return ResponseEntity.ok(paymentDetails);
     }
@@ -67,13 +71,13 @@ public class PaymentDetailsController {
     @PutMapping("/{id}")
     public ResponseEntity<?> setPaymentDetails(HttpServletRequest request, @RequestBody PaymentDetailsDto paymentDetailsDto) {
         if (userService.isAdmin(request) == false) {
-            return ResponseEntity.status(401).body("Acces denied");
+            return ResponseUtils.forbidden("Access denied");
         }
 
         Long userId = userService.extractUserIdFromRequest(request);
         PaymentDetailsDto updatedPaymentDetails = paymentDetailsService.setPaymentDetails(userId, paymentDetailsDto);
         if (updatedPaymentDetails == null) {
-            return ResponseEntity.badRequest().body("These payment details do not exist");
+            return ResponseUtils.badRequest("These payment details do not exist");
         }
         return ResponseEntity.ok(updatedPaymentDetails);
     }

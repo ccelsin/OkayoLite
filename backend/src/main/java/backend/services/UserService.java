@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import backend.configuration.JwtUtils;
 import backend.constants.UserRole;
 import backend.dtos.UserDto;
-import backend.models.PaymentDetails;
 import backend.models.User;
 import backend.repositories.UserRepository;
 import backend.utilities.BeanCopyUtils;

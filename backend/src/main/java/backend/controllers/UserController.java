@@ -11,11 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import backend.configuration.JwtUtils;
+import backend.utilities.ResponseUtils;
+
 import backend.dtos.UserDto;
 import backend.models.User;
 import backend.repositories.UserRepository;
 import backend.services.UserMapperService;
 import backend.services.UserService;
+
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -35,13 +38,13 @@ public class UserController {
     public ResponseEntity<?> getProfile(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if (userService.isAuthorized(request) == false) {
-            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+            return ResponseUtils.unauthorized("Missing or invalid Authorization header");
         }
 
         String token = authHeader.substring(7);
         Long userId = userService.extractUserIdFromToken(token);
         if (userId == null) {
-            return ResponseEntity.status(401).body("Invalid token");
+            return ResponseUtils.unauthorized("Invalid token");
         }
 
         var userDto = userService.getProfile(userId);
@@ -53,13 +56,13 @@ public class UserController {
     public ResponseEntity<?> updateProfile(HttpServletRequest request, @RequestBody UserDto updatedUserDto) {
         String authHeader = request.getHeader("Authorization");
         if (userService.isAuthorized(request) == false) {
-            return ResponseEntity.status(401).body("Missing or invalid Authorization header");
+            return ResponseUtils.unauthorized("Missing or invalid Authorization header");
         }
 
         String token = authHeader.substring(7);
         Long userId = userService.extractUserIdFromToken(token);
         if (userId == null) {
-            return ResponseEntity.status(401).body("Invalid token");
+            ResponseUtils.unauthorized("Invalid token");
         }
         userService.setProfile(userId, updatedUserDto);
         return ResponseEntity.status(200).body("Profile updated. You have to login now");
