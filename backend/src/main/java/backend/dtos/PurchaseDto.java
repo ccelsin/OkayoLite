@@ -6,7 +6,7 @@ public record PurchaseDto(
     Long id,
     Long productId,
     String name,
-    Integer quantity,
+    BigDecimal quantity,
     BigDecimal unitPriceHT,
     BigDecimal totalHT,
     BigDecimal tvaApplied,

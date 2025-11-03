@@ -19,9 +19,11 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private final TvaRepository tvaRepository;
+    private final ResolveService resolveService;
+    
 
     public ProductDto saveProductDetails(ProductDto productDto) {
-        Tva tva = resolveTva(productDto.tvaId());
+        Tva tva = resolveService.resolveTva(productDto.tvaId());
         ProductDto productUpdated = new ProductDto(
             null,
             productDto.name(),
@@ -52,23 +54,15 @@ public class ProductService {
 
         // get tva data by his id
         if (productDetails.tvaId() != null) {
-            Tva tva = resolveTva(productDetails.tvaId());
+            Tva tva = resolveService.resolveTva(productDetails.tvaId());
             product.setTva(tva);
         }
 
         return productRepository.save(product);
     })
     .orElseThrow(() -> new EntityNotFoundException("Product not found with id " + productDetails.id()));
-
-
         return updatedProduct != null ? ProductMapperService.toDto(updatedProduct) : null;
     }
 
-    private Tva resolveTva(Long tvaId) {
-        if (tvaId == null) {
-            throw new EntityNotFoundException("Tva reference is required for product operations");
-        }
-        return tvaRepository.findById(tvaId)
-            .orElseThrow(() -> new EntityNotFoundException("Tva " + tvaId + " introuvable"));
-    }
+    
 }

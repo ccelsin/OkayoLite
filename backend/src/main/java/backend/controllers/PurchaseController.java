@@ -86,11 +86,16 @@ public class PurchaseController {
     @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     public ResponseEntity<?> setPurchase(HttpServletRequest request, @PathVariable Long id, @RequestBody PurchaseDto purchaseDto) {
+        String authHeader = request.getHeader("Authorization");
         if (userService.isAdmin(request) == false) {
             return ResponseUtils.forbidden("Only admins can update purchases");
         }
-
-        PurchaseDto payload = new PurchaseDto(
+        String token = authHeader.substring(7);
+        Long userId = userService.extractUserIdFromToken(token);
+        if (userId == null) {
+            ResponseUtils.unauthorized("Invalid token");
+        }
+        PurchaseDto purchaseDtoUpdated = new PurchaseDto(
             id,
             purchaseDto.productId(),
             purchaseDto.name(),
@@ -99,13 +104,13 @@ public class PurchaseController {
             purchaseDto.totalHT(),
             purchaseDto.tvaApplied(),
             purchaseDto.totalTva(),
-            purchaseDto.invoiceId(),
+            userId,
             purchaseDto.purchaserId(),
             purchaseDto.isConfirmed()
         );
 
         try {
-            PurchaseDto updatedPurchase = purchaseService.setPurchase(payload);
+            PurchaseDto updatedPurchase = purchaseService.setPurchase(purchaseDtoUpdated);
             return ResponseEntity.ok(updatedPurchase);
         } catch (EntityNotFoundException ex) {
             return ResponseUtils.notFound(ex.getMessage());
