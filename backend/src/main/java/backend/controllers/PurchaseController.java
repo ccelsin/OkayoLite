@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import backend.dtos.PurchaseDto;
 import backend.services.PurchaseService;
+import backend.services.ResolveService;
 import backend.services.UserService;
 import backend.utilities.ResponseUtils;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -27,6 +28,7 @@ public class PurchaseController {
 
     private final PurchaseService purchaseService;
     private final UserService userService;
+    private final ResolveService resolveService;
 
     @SecurityRequirement(name = "bearerAuth")
     @PostMapping
@@ -66,7 +68,7 @@ public class PurchaseController {
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping
     public ResponseEntity<?> getAllPurchases(HttpServletRequest request) {
-        if (userService.isAuthorized(request) == false) {
+        if (userService.isAdmin(request) == false) {
             return ResponseUtils.unauthorized("Access denied");
         }
         List<PurchaseDto> purchases = purchaseService.getAllPurchases();
@@ -84,11 +86,35 @@ public class PurchaseController {
     }
 
     @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/mine")
+    public ResponseEntity<?> getPurchaseByPurchaser(HttpServletRequest request) {
+        Long purchaserId = userService.extractUserIdFromRequest(request);
+        if (purchaserId == null) {
+            return ResponseUtils.unauthorized("Access denied");
+        }
+
+        List<PurchaseDto> purchases = purchaseService.getPurchasesByPurchaser(purchaserId);
+        return ResponseEntity.ok(purchases);
+    }
+
+    @SecurityRequirement(name = "bearerAuth")
+    @GetMapping("/{id}/customer")
+    public ResponseEntity<?> getPurchaseOfPurchaser(@PathVariable Long id, HttpServletRequest request) {
+        
+        if (userService.isAdmin (request) == false) {
+            return ResponseUtils.unauthorized("Access denied");
+        }
+
+        List<PurchaseDto> purchases = purchaseService.getPurchasesByPurchaser(id);
+        return ResponseEntity.ok(purchases);
+    }
+    
+
+    @SecurityRequirement(name = "bearerAuth")
     @PutMapping("/{id}")
     public ResponseEntity<?> setPurchase(HttpServletRequest request, @PathVariable Long id, @RequestBody PurchaseDto purchaseDto) {
         String authHeader = request.getHeader("Authorization");
         if (userService.isAdmin(request) == false) {
-            return ResponseUtils.forbidden("Only admins can update purchases");
         }
         String token = authHeader.substring(7);
         Long userId = userService.extractUserIdFromToken(token);
