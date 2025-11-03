@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import backend.configuration.JwtUtils;
 import backend.constants.UserRole;
 import backend.dtos.UserDto;
+import backend.models.PaymentDetails;
 import backend.models.User;
 import backend.repositories.UserRepository;
 import backend.utilities.BeanCopyUtils;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -21,11 +23,12 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
-    private final UserService userService;
+    
     
     public UserDto getProfile(Long userId) {
-        var userProfile = userRepository.findById(userId).orElse(null);
-        return UserMapperService.toDto(userProfile);
+        return userRepository.findById(userId)
+                .map(UserMapperService::toDto)
+                .orElse(null);
     }
     
     public Long extractUserIdFromRequest(HttpServletRequest request) {
@@ -65,13 +68,13 @@ public class UserService {
 
     public UserDto setProfile(Long userId, UserDto userDto) {
         
-        User user = userRepository.findById(userId).orElse(null);
-
+        User user = userRepository.findById(userId).orElseThrow(() -> new EntityNotFoundException("User details not found"));
+        
         BeanCopyUtils.copyNonNullProperties(userDto, user);
-
-        return user != null ? UserMapperService.toDto(user) : null;
+        user.setId(userId);
+        User savedUser = userRepository.save(user);
+        return UserMapperService.toDto(savedUser);
     }
-
 
     public UserDto getUser(Long id) {
         Optional<User> user = userRepository.findById(id);

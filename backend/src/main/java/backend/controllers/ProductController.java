@@ -31,7 +31,7 @@ public class ProductController {
     @PostMapping
     public ResponseEntity<?> saveProduct(HttpServletRequest request, @RequestBody ProductDto productDto) {
         if (userService.isAdmin(request) == false) {
-            return ResponseEntity.status(401).body("Acces denied");
+            return ResponseEntity.status(401).body("Only admins can create product.");
         }
         ProductDto savedProduct = productService.saveProductDetails(productDto);
         return ResponseEntity.ok(savedProduct);

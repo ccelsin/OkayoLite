@@ -32,7 +32,7 @@ public class PaymentDetailsController {
     @PostMapping
     public ResponseEntity<?> savePaymentDetails(HttpServletRequest request, @RequestBody PaymentDetailsRequest paymentDetailsRequest) {
         if (userService.isAdmin(request) == false) {
-            return ResponseEntity.status(401).body("Acces denied");
+            return ResponseEntity.status(401).body("Only admins can create payment method deteils");
         }
 
         Long userId = userService.extractUserIdFromRequest(request);

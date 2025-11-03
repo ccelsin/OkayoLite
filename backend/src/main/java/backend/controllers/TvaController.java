@@ -33,7 +33,7 @@ public class TvaController {
     @GetMapping
     public ResponseEntity<?> getAllTva(HttpServletRequest request) {
         if (userService.isAuthorized(request) == false) {
-            return ResponseEntity.status(401).body("Acces denied");
+            return ResponseEntity.badRequest().body("Acces denied");
         }
         List<TvaDto> tvaList = tvaService.getAllTva();
         return ResponseEntity.ok(tvaList);
@@ -41,7 +41,10 @@ public class TvaController {
 
     @SecurityRequirement(name = "bearerAuth")
     @GetMapping("/{id}")
-    public ResponseEntity<?> getTva(@PathVariable Long id) {
+    public ResponseEntity<?> getTva(HttpServletRequest request,@PathVariable Long id) {
+        if(userService.isAdmin(request) == false) {
+            return ResponseEntity.badRequest().body("Only admins can create TVA.");
+        }
         TvaDto tva = tvaService.getTva(id);
         return ResponseEntity.ok(tva);
     }

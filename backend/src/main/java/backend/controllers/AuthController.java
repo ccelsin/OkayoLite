@@ -53,8 +53,8 @@ public class AuthController {
             String code = userService.generateCode();
             user.setCodeCustomer(code);
         }
-
-        return ResponseEntity.ok(userRepository.save(user));
+        userRepository.save(user);
+        return ResponseEntity.ok(authUserDto);
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Failed to register user");

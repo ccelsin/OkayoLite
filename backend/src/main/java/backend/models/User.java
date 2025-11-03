@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import lombok.Data;
 
 @Entity
@@ -31,7 +32,6 @@ public class User {
     @NotNull(message = "Role cannot be null")
     private UserRole role;
 
-    @Email
     @Nullable
     private String email;
 
