@@ -111,6 +111,9 @@ public class PurchaseService {
         Invoice invoice = purchaseDto.invoiceId() != null ? resolveService.resolveInvoice(purchaseDto.invoiceId()) : null;
         User purchaser = purchaseDto.purchaserId() != null ? resolveService.resolveUser(purchaseDto.purchaserId()) : null;
 
+        User effectivePurchaser = purchaser != null ? purchaser : purchase.getPurchaser();
+
+
         if (Boolean.TRUE.equals(purchaseDto.isConfirmed())
             && purchase.getInvoice() == null
             && invoice == null) {
@@ -127,6 +130,18 @@ public class PurchaseService {
             purchase.setConfirmed(purchaseDto.isConfirmed());
         }
         if (invoice != null) {
+            if (effectivePurchaser == null) {
+                throw new IllegalStateException("Cannot assign an invoice without a purchaser");
+            }
+
+            User existingCustomer = invoice.getCustomer();
+            if (existingCustomer == null) {
+                invoice.setCustomer(effectivePurchaser);
+            } else if (!existingCustomer.getId().equals(effectivePurchaser.getId())) {
+                throw new IllegalStateException("Invoice is already linked to another customer");
+            }
+
+            invoiceRepository.save(invoice);
             purchase.setInvoice(invoice);
         }
         if (purchaser != null) {

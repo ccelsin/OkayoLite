@@ -4,6 +4,11 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import backend.constants.PaymentTerms;
 
 @Entity
@@ -37,5 +42,9 @@ public class PaymentDetails {
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "paymentDetails")
+    private List<Invoice> invoices;
     
 }

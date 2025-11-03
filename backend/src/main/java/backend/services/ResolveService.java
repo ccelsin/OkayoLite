@@ -3,10 +3,12 @@ package backend.services;
 import org.springframework.stereotype.Service;
 
 import backend.models.Invoice;
+import backend.models.PaymentDetails;
 import backend.models.Product;
 import backend.models.Tva;
 import backend.models.User;
 import backend.repositories.InvoiceRepository;
+import backend.repositories.PaymentDetailsRepository;
 import backend.repositories.ProductRepository;
 import backend.repositories.TvaRepository;
 import backend.repositories.UserRepository;
@@ -21,6 +23,9 @@ public class ResolveService {
     private final ProductRepository productRepository;
     private final InvoiceRepository invoiceRepository;
     private final UserRepository userRepository;
+    private final PaymentDetailsRepository paymentDetailsRepository;
+
+    
 
     public Tva resolveTva(Long tvaId) {
         if (tvaId == null) {
@@ -30,6 +35,8 @@ public class ResolveService {
             .orElseThrow(() -> new EntityNotFoundException("Tva " + tvaId + " introuvable"));
     }
 
+    
+
     public Product resolveProduct(Long productId) {
         if (productId == null) {
             throw new EntityNotFoundException("Product reference is required for purchase operations");
@@ -38,6 +45,8 @@ public class ResolveService {
             .orElseThrow(() -> new EntityNotFoundException("Product " + productId + " not found"));
     }
 
+
+
     public Invoice resolveInvoice(Long invoiceId) {
         if (invoiceId == null) {
             throw new EntityNotFoundException("Invoice reference is required for purchase operations");
@@ -45,6 +54,18 @@ public class ResolveService {
         return invoiceRepository.findById(invoiceId)
             .orElseThrow(() -> new EntityNotFoundException("Invoice " + invoiceId + " not found"));
     }
+
+
+
+     public PaymentDetails resolvePaymentDetails(Long paymentDetailsId) {
+        if (paymentDetailsId == null) {
+            throw new EntityNotFoundException("Payment details reference is required for invoice operations");
+        }
+        return paymentDetailsRepository.findById(paymentDetailsId)
+            .orElseThrow(() -> new EntityNotFoundException("Payment details " + paymentDetailsId + " not found"));
+    }
+
+
 
     public User resolveUser(Long userId) {
         if (userId == null) {
