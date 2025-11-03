@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import backend.dtos.TvaDto;
 import backend.models.Tva;
 import backend.repositories.TvaRepository;
+import backend.utilities.BeanCopyUtils;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
@@ -41,30 +42,38 @@ public class TvaService {
      public TvaDto setTva(TvaDto tvaDetails) {
         return tvaRepository.findById(tvaDetails.id()).map(tva -> {
             // Update fields
-            tva.setDefaultRate(tvaDetails.defaultRate());
-            tva.setPreviousRate(tvaDetails.previousRate());
-            tva.setFutureRate(tvaDetails.futureRate());
-            tva.setStartEvolutionDate(tvaDetails.startEvolutionDate());
-            tva.setEndEvolutionDate(tvaDetails.endEvolutionDate());
+            Tva updates = TvaMapperService.toEntity(tvaDetails);
+            BeanCopyUtils.copyNonNullProperties(updates, tva, "id", "evolutionApplied", "products");
 
-            tva.setEvolutionApplied(false);
+            
             Date now = new Date(System.currentTimeMillis());
 
-        if ((tva.getStartEvolutionDate().before(now) || tva.getStartEvolutionDate().equals(now)
-                || tva.getEndEvolutionDate().before(now))
-                && tva.getFutureRate() != null) {
-                // Case where evolution is applied immediately
-                tva.setPreviousRate(tva.getDefaultRate());
+            Date startDate = tva.getStartEvolutionDate();
+            Date endDate = tva.getEndEvolutionDate();
+            boolean hasFutureRate = tva.getFutureRate() != null;
+            boolean evolutionApplied = Boolean.TRUE.equals(tva.getEvolutionApplied());
 
-                tva.setDefaultRate(tva.getFutureRate());
-                tva.setFutureRate(null);
-                tva.setEvolutionApplied(false);
-
-
-            }else if ((tva.getStartEvolutionDate().before(now) || tva.getStartEvolutionDate().equals(now)
-                || tva.getEndEvolutionDate().before(now))
-                && tva.getFutureRate() == null) {
-                    tva.setDefaultRate(tva.getPreviousRate());
+            if (hasFutureRate) {
+                if (startDate != null && !startDate.after(now)) {
+                    if (tva.getDefaultRate() != null) {
+                        tva.setPreviousRate(tva.getDefaultRate());
+                    }
+                    tva.setDefaultRate(tva.getFutureRate());
+                    tva.setFutureRate(null);
+                    tva.setEvolutionApplied(true);
+                } else {
+                    tva.setEvolutionApplied(false);
+                }
+            } else if (evolutionApplied) {
+                if (endDate != null && !endDate.after(now)) {
+                    if (tva.getPreviousRate() != null) {
+                        tva.setDefaultRate(tva.getPreviousRate());
+                    }
+                    tva.setPreviousRate(null);
+                    tva.setStartEvolutionDate(null);
+                    tva.setEndEvolutionDate(null);
+                    tva.setEvolutionApplied(false);
+                }
             }
 
             Tva tvaEntity = tvaRepository.save(tva);

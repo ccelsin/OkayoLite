@@ -5,6 +5,7 @@ import java.util.List;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 
 @Entity
@@ -19,6 +20,7 @@ public class Product {
     @NotBlank(message = "Name cannot be null")
     private String name;
 
+    @Positive
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal unitPriceHT;
 

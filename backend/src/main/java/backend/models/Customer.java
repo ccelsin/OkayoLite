@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -21,6 +22,7 @@ public class Customer {
     @NotBlank(message = "Name cannot be blank")
     private String name;
 
+    @Email
     @Nullable
     private String email;
 

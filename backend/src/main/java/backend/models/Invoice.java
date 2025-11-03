@@ -1,5 +1,6 @@
 package backend.models;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -24,6 +25,10 @@ public class Invoice {
 
     @Nullable
     private Date dueDate;
+
+    private BigDecimal totalHT;
+
+    private BigDecimal totalTTC;
 
     @ManyToOne
     @JoinColumn(name = "customer_id", nullable = false)
